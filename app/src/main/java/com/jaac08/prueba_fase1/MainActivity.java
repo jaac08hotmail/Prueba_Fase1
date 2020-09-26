@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,6 +22,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.jaac08.prueba_fase1.ClassDB.ConexionSQliteHelper;
+import com.jaac08.prueba_fase1.ClassDB.EstructuraBD;
 import com.jaac08.prueba_fase1.classGlobal.AdapterPost;
 import com.jaac08.prueba_fase1.classGlobal.General;
 import com.jaac08.prueba_fase1.classGlobal.Mensaje;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     SweetAlertDialog sweetAlertDialog;
     Mensaje mensaje;
     Post[] posts;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +53,11 @@ public class MainActivity extends AppCompatActivity {
         sweetAlertDialog = new SweetAlertDialog(this);
         mensaje = new Mensaje();
         listPost = new ArrayList<Post>();
+        General.conn = new ConexionSQliteHelper(this,"PruebaFase1",null,1);
+        db= General.conn.getWritableDatabase();
 
-        try {
-            ConsultaPost();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            mensaje.MensajeAdvertencia(this,"Advertencia","Mensaje:" + e.getMessage());
-        }
+
+        ConsultaPost();
 
         listVPost.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,11 +65,10 @@ public class MainActivity extends AppCompatActivity {
                 mensaje.MensajeExitoso(MainActivity.this,"Post"+listPost.get(pos).getId(),"Title:"+listPost.get(pos).getTitle());
             }
         });
-
     }
 
 
-    public void ConsultaPost() throws JSONException {
+    public void ConsultaPost()  {
 
         String URL = General.servidor + General.routesPosts;
 
@@ -80,20 +82,23 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         JSONObject result = null;
                         try {
-                            sweetAlertDialog.dismiss();
-                            if (response.length() == 0  ){
 
+                            if (response.length() == 0  ){
+                                sweetAlertDialog.dismiss();
                                 mensaje.MensajeAdvertencia(MainActivity.this, "Advertencia" , "No se encontraron datos!!!");
                             }
                             else {
                                 posts = new Gson().fromJson(response, Post[].class);
 
                                 for (Post post : posts) {
+                                    post.setRead(false);
+                                    post.setFavorite(false);
+                                    insertPost(post);
                                     listPost.add(post);
                                 }
                                 adapterPost = new AdapterPost(MainActivity.this,listPost);
                                 listVPost.setAdapter(adapterPost);
-
+                                sweetAlertDialog.dismiss();
                             }
                         } catch (Exception e) {
                             sweetAlertDialog.dismiss();
@@ -125,6 +130,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    public void insertPost(Post post){
+        ContentValues valores = new ContentValues();
+        try {
+
+        valores.put("ID",post.getId());
+        valores.put("USERID",post.getUserId());
+        valores.put("TITLE",post.getTitle());
+        valores.put("BODY",post.getBody());
+        valores.put("READ",post.getRead());
+
+        db.insertOrThrow(EstructuraBD.TABLA_POST,null,valores);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     private final Response.ErrorListener errorListener = new Response.ErrorListener() {
         @Override

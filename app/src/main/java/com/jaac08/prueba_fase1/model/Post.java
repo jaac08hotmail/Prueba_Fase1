@@ -5,6 +5,11 @@ public class Post {
     private int id;
     private String title;
     private String body;
+    private Boolean read;
+    private Boolean favorite;
+
+    public Post() {
+    }
 
     public int getUserId() {
         return userId;
@@ -30,4 +35,13 @@ public class Post {
     public void setBody(String body) {
         this.body = body;
     }
+    public Boolean getRead() {
+        return read;
+    }
+    public void setRead(Boolean read) {
+        this.read = read;
+    }
+    public Boolean getFavorite() {return favorite; }
+    public void setFavorite(Boolean favorite) { this.favorite = favorite; }
+
 }

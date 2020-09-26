@@ -56,8 +56,12 @@ public class AdapterPost extends BaseAdapter {
         txtVIdUser.setText("" + item.getUserId());
         txtVTitle.setText(item.getTitle());
 
-        if (position<20)
-            linerList.setBackgroundColor(Color.argb(100,0,145,234));
+        if (position<20){
+            if (!item.getRead())
+                linerList.setBackgroundColor(Color.argb(100,0,145,234));
+
+        }
+
 
         return convertView;
     }
