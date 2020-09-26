@@ -6,5 +6,6 @@ public class General {
     public static ConexionSQliteHelper conn;
     public static String servidor = "https://jsonplaceholder.typicode.com/";
     public static String routesPosts = "posts";
+    public static String routesUser = "users";
 
 }

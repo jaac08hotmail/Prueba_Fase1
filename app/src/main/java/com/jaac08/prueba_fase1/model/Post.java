@@ -1,6 +1,8 @@
 package com.jaac08.prueba_fase1.model;
 
-public class Post {
+import java.io.Serializable;
+
+public class Post implements Serializable {
     private int userId;
     private int id;
     private String title;

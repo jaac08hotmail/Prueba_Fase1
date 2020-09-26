@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.security.identity.CipherSuiteNotSupportedException;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -62,7 +64,13 @@ public class MainActivity extends AppCompatActivity {
         listVPost.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+                listPost.get(pos).setRead(true);
+
                 mensaje.MensajeExitoso(MainActivity.this,"Post"+listPost.get(pos).getId(),"Title:"+listPost.get(pos).getTitle());
+                Intent intent = new Intent(MainActivity.this,DetalleActivity.class);
+                intent.putExtra("post", listPost.get(pos));
+                startActivity(intent);
+
             }
         });
     }
