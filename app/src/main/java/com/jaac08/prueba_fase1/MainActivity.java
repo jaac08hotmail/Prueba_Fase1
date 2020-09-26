@@ -93,9 +93,8 @@ public class MainActivity extends AppCompatActivity {
                                 for (int position : reverseSortedPositions) {
 
                                     listPost.remove(position);
+                                    deletePost(listPost.get(position));
                                     adapterPost.notifyDataSetChanged();
-
-
                                 }
 
                             }
@@ -264,6 +263,16 @@ public class MainActivity extends AppCompatActivity {
         }
         catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    public void deletePost(Post post){
+        try {
+            db.delete(EstructuraBD.TABLA_POST,"ID = ?", new String[]{String.valueOf(post.getId())});
+
+        }
+        catch (Exception ex){
+            mensaje.MensajeAdvertencia(this,"Warning",ex.getMessage());
         }
     }
 
