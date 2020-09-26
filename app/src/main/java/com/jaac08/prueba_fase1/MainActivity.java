@@ -7,6 +7,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.security.identity.CipherSuiteNotSupportedException;
@@ -64,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
         listVPost.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                listPost.get(pos).setRead(true);
-
                 mensaje.MensajeExitoso(MainActivity.this,"Post"+listPost.get(pos).getId(),"Title:"+listPost.get(pos).getTitle());
                 Intent intent = new Intent(MainActivity.this,DetalleActivity.class);
                 intent.putExtra("post", listPost.get(pos));
@@ -75,12 +74,71 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ConsultaDBPost();
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(MainActivity.this,"Warning","Is sure to Exit?");
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismiss();
+                try {
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mensaje.MensajeAdvertencia(MainActivity.this, "Warning", e.getMessage());
+                }
+
+            }
+        });
+        sweetAlertDialog.show();
+    }
+
+    public void ConsultaDBPost(){
+
+        try {
+
+            SQLiteDatabase db = General.conn.getReadableDatabase();
+
+            Cursor cursor = db.rawQuery("SELECT  ID,USERID,TITLE,BODY,READ,FAVORITE FROM POST" ,null);
+
+            cursor.moveToFirst();
+
+            if (cursor.getCount() == 0 )
+                return;
+
+          for (int cont=0;cont< cursor.getCount();cont++){
+              Post post = new Post();
+              post.setId(Integer.parseInt(cursor.getString(0)));
+              post.setUserId(Integer.parseInt(cursor.getString(1)));
+              post.setTitle(cursor.getString(2));
+              post.setBody(cursor.getString(3));
+              post.setRead(Integer.parseInt(cursor.getString(4)));
+              post.setFavorite(Integer.parseInt(cursor.getString(5)));
+              listPost.add(post);
+
+          }
+            adapterPost = new AdapterPost(MainActivity.this,listPost);
+            listVPost.setAdapter(adapterPost);
+            return ;
+        }
+        catch(Exception e){
+            mensaje.MensajeConfirmacionAdvertencia(this,"Advertecia",e.getMessage());
+            return ;
+        }
+    }
 
     public void ConsultaPost()  {
 
         String URL = General.servidor + General.routesPosts;
 
-        sweetAlertDialog = mensaje.progreso(MainActivity.this,"Consultando Datos");
+        sweetAlertDialog = mensaje.progreso(MainActivity.this,"Consulting posts");
         sweetAlertDialog.show();
 
 
@@ -93,14 +151,14 @@ public class MainActivity extends AppCompatActivity {
 
                             if (response.length() == 0  ){
                                 sweetAlertDialog.dismiss();
-                                mensaje.MensajeAdvertencia(MainActivity.this, "Advertencia" , "No se encontraron datos!!!");
+                                mensaje.MensajeAdvertencia(MainActivity.this, "Warning" , "No data found!!!");
                             }
                             else {
                                 posts = new Gson().fromJson(response, Post[].class);
 
                                 for (Post post : posts) {
-                                    post.setRead(false);
-                                    post.setFavorite(false);
+                                    post.setRead(0);
+                                    post.setFavorite(0);
                                     insertPost(post);
                                     listPost.add(post);
                                 }
@@ -110,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } catch (Exception e) {
                             sweetAlertDialog.dismiss();
-                            mensaje.MensajeAdvertencia(MainActivity.this, "Advertencia" , e.getMessage());
+                            mensaje.MensajeAdvertencia(MainActivity.this, "Warning" , e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -168,19 +226,19 @@ public class MainActivity extends AppCompatActivity {
                     error.printStackTrace();
                     sweetAlertDialog.dismiss();
                     String responseBody = new String(error.networkResponse.data, "utf-8");
-                    mensaje.MensajeAdvertencia(MainActivity.this, "Advertencia", responseBody);
+                    mensaje.MensajeAdvertencia(MainActivity.this, "Warning", responseBody);
                     return;
                 }
                 String msj = error.getMessage();
                 if (msj == null) {
                     error.printStackTrace();
                     sweetAlertDialog.dismiss();
-                    mensaje.MensajeAdvertencia(MainActivity.this, "Advertencia", "Servidor No Responde");
+                    mensaje.MensajeAdvertencia(MainActivity.this, "Warning", "Server Not Responding");
                     return;
                 } else {
                     error.printStackTrace();
                     sweetAlertDialog.dismiss();
-                    mensaje.MensajeAdvertencia(MainActivity.this, "Advertencia", msj.toString());
+                    mensaje.MensajeAdvertencia(MainActivity.this, "Warning", msj.toString());
                     return;
                 }
             }
@@ -188,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             catch(Exception e){
-                mensaje.MensajeAdvertencia(MainActivity.this, "Advertencia", e.getMessage());
+                mensaje.MensajeAdvertencia(MainActivity.this, "Warning", e.getMessage());
             }
         }
     };

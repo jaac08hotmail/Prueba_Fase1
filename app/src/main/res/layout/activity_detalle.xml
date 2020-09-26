@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground2"
     tools:context=".DetalleActivity">
 
     <TextView
@@ -24,7 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="8dp"
-        android:text="NameC"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtNameC"
         app:layout_constraintTop_toBottomOf="@+id/txtCompany" />
 
@@ -46,7 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:text="Bs"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtBs"
         app:layout_constraintTop_toBottomOf="@+id/txtCompany" />
@@ -61,7 +64,7 @@
         android:textColor="@color/colorAccent"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtNameC" />
+        app:layout_constraintTop_toBottomOf="@id/txtVBs" />
 
     <TextView
         android:id="@+id/txtVCatchPhrase"
@@ -69,9 +72,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="11dp"
         android:layout_marginTop="8dp"
-        android:text="Catch Phrase"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtCatchPhrase"
-        app:layout_constraintTop_toBottomOf="@+id/txtVnameC" />
+        app:layout_constraintTop_toBottomOf="@id/txtVBs" />
+
+    <Button
+        android:id="@+id/btnFavorite"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/animafavorite_off"
+        android:onClick="Onclick"
+        app:layout_constraintStart_toEndOf="@+id/txtVFavorite"
+        app:layout_constraintTop_toBottomOf="@+id/txtVCatchPhrase" />
 
     <TextView
         android:id="@+id/txtNameC"
@@ -115,7 +130,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="User Name"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtUserName"
@@ -151,7 +165,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="1"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtIduser"
@@ -163,7 +176,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:text="Name"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -177,7 +189,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:text="Email"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -215,7 +226,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:text="Street"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtStreet"
         app:layout_constraintTop_toBottomOf="@+id/txtAddress" />
 
@@ -237,7 +249,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:text="Suite"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtSuite"
         app:layout_constraintTop_toBottomOf="@+id/txtAddress" />
@@ -260,7 +273,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="11dp"
         android:layout_marginTop="8dp"
-        android:text="City"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtCity"
         app:layout_constraintTop_toBottomOf="@+id/txtVStreet" />
 
@@ -282,7 +296,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginTop="8dp"
-        android:text="Zipcode"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtZipcode"
         app:layout_constraintTop_toBottomOf="@+id/txtVSuite" />
@@ -317,7 +332,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Latitude"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtLat"
         app:layout_constraintTop_toBottomOf="@+id/txtGeo" />
 
@@ -339,19 +355,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Longitude"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtLon"
-        app:layout_constraintTop_toBottomOf="@+id/txtGeo" />
-
-    <Button
-        android:id="@+id/btnMaps"
-        android:layout_width="59dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:text="Maps"
-        android:textSize="8sp"
-        app:layout_constraintStart_toEndOf="@+id/txtVlon"
         app:layout_constraintTop_toBottomOf="@+id/txtGeo" />
 
     <View
@@ -366,6 +372,18 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtVWebsite" />
+
+    <Button
+        android:id="@+id/btnMaps"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/animamapa"
+        android:onClick="Onclick"
+        android:textSize="8sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
     <View
         android:id="@+id/divider2"
@@ -385,7 +403,6 @@
         android:layout_width="409dp"
         android:layout_height="1dp"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="12dp"
         android:layout_marginEnd="1dp"
         android:background="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -398,7 +415,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="POST"
+        android:text="INFO POST"
         android:textColor="@color/colorAccent"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -410,9 +427,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="5dp"
-        android:text="Body"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/POST" />
@@ -447,7 +465,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Phone"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/txtPhone"
         app:layout_constraintTop_toBottomOf="@+id/txtUserName" />
 
@@ -469,25 +488,34 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:text="Website"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtWebsite"
         app:layout_constraintTop_toBottomOf="@+id/txtEmail" />
 
     <Button
-        android:id="@+id/btnFavorite"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/Favourite_off"
-        tools:layout_editor_absoluteX="52dp"
-        tools:layout_editor_absoluteY="472dp" />
-
-    <Button
         android:id="@+id/btnExit"
+        android:layout_width="127dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/btnsalirr"
+        android:onClick="Onclick"
+        android:text="Exit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtVBs" />
+
+    <TextView
+        android:id="@+id/txtVFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="199dp"
-        tools:layout_editor_absoluteY="472dp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text=" Add to Favorites"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtCatchPhrase" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

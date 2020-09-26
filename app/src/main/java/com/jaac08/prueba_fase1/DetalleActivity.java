@@ -6,7 +6,11 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.telephony.PhoneStateListener;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -31,9 +35,13 @@ import java.util.Map;
 
 public class DetalleActivity extends AppCompatActivity {
 
+    TextView txtVnameC,txtVBs,txtVCatchPhrase,txtVUserName,txtVIduser;
+    TextView txtVName,txtVEmail,txtVStreet,txtVSuite,txtVCity,txtVZipcode;
+    TextView textVLat,txtVlon,txtVBoby,txtVPhone,txtVWebsite,txtVFavorite;
+    Button btnFavorite,btnMaps,btnExit;
     Post post;
-    User user;
-    SQLiteDatabase db;
+    User users[];
+        SQLiteDatabase db;
     SweetAlertDialog sweetAlertDialog;
     Mensaje mensaje;
     @Override
@@ -42,19 +50,59 @@ public class DetalleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detalle);
         sweetAlertDialog = new SweetAlertDialog(this);
         mensaje = new Mensaje();
+        txtVnameC = findViewById(R.id.txtVnameC);
+        txtVBs = findViewById(R.id.txtVBs);
+        txtVCatchPhrase = findViewById(R.id.txtVCatchPhrase);
+        txtVUserName = findViewById(R.id.txtVUserName);
+        txtVIduser = findViewById(R.id.txtVIduser);
+        txtVName = findViewById(R.id.txtVName);
+        txtVEmail = findViewById(R.id.txtVEmail);
+        txtVStreet = findViewById(R.id.txtVStreet);
+        txtVSuite = findViewById(R.id.txtVSuite);
+        txtVCity = findViewById(R.id.txtVCity);
+        txtVZipcode = findViewById(R.id.txtVZipcode);
+        textVLat = findViewById(R.id.textVLat);
+        txtVlon = findViewById(R.id.txtVlon);
+        txtVBoby = findViewById(R.id.txtVBoby);
+        txtVPhone = findViewById(R.id.txtVPhone);
+        txtVWebsite = findViewById(R.id.txtVWebsite);
+        txtVFavorite = findViewById(R.id.txtVFavorite);
+
+        btnFavorite = findViewById(R.id.btnFavorite);
+        btnMaps = findViewById(R.id.btnMaps);
+        btnExit = findViewById(R.id.btnExit);
+
         db= General.conn.getWritableDatabase();
 
         post = (Post) getIntent().getExtras().getSerializable("post");
-        post.setRead(true);
         ConsultaUser();
 
     }
 
+    @Override
+    public void onBackPressed(){
+        sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
+        sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                sweetAlertDialog.dismiss();
+                try {
+                    UpdateInfoPost();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mensaje.MensajeAdvertencia(DetalleActivity.this, "Warning", e.getMessage());
+                }
+
+            }
+        });
+        sweetAlertDialog.show();
+    }
+
     public void ConsultaUser()  {
 
-        String URL = General.servidor + General.routesPosts + "?id=" +post.getUserId();
+        String URL = General.servidor + General.routesUser + "?id=" + post.getUserId();
 
-        sweetAlertDialog = mensaje.progreso(DetalleActivity.this,"Consultando Usuario");
+        sweetAlertDialog = mensaje.progreso(DetalleActivity.this,"Querying User");
         sweetAlertDialog.show();
 
 
@@ -67,16 +115,16 @@ public class DetalleActivity extends AppCompatActivity {
 
                             if (response.length() == 0  ){
                                 sweetAlertDialog.dismiss();
-                                mensaje.MensajeAdvertencia(DetalleActivity.this, "Advertencia" , "No se encontraron datos!!!");
+                                mensaje.MensajeAdvertencia(DetalleActivity.this, "Warning" , "No data found!!!");
                             }
                             else {
-                                user = new Gson().fromJson(response, User.class);
-
+                                users = new Gson().fromJson(response, User[].class);
+                                LlenarDatos(users[0]);
                                 sweetAlertDialog.dismiss();
                             }
                         } catch (Exception e) {
                             sweetAlertDialog.dismiss();
-                            mensaje.MensajeAdvertencia(DetalleActivity.this, "Advertencia" , e.getMessage());
+                            mensaje.MensajeAdvertencia(DetalleActivity.this, "Warning" , e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -105,18 +153,111 @@ public class DetalleActivity extends AppCompatActivity {
     }
 
 
+    public void LlenarDatos(User user){
+
+        try{
+            txtVnameC.setText(user.getCompany().getName());
+            txtVBs.setText(user.getCompany().getBs());
+            txtVCatchPhrase.setText(user.getCompany().getCatchPhrase());
+            txtVUserName.setText(user.getUsername());
+            txtVIduser.setText(String.valueOf(user.getId()));
+            txtVName.setText(user.getName());
+            txtVEmail.setText(user.getEmail());
+            txtVStreet.setText(user.getAddress().getStreet());
+            txtVSuite.setText(user.getAddress().getSuite());
+            txtVCity.setText(user.getAddress().getCity());
+            txtVZipcode.setText(user.getAddress().getZipcode());
+            textVLat.setText(user.getAddress().getGeo().getLat());
+            txtVlon.setText(user.getAddress().getGeo().getLng());
+            txtVPhone.setText(user.getPhone());
+            txtVWebsite.setText(user.getWebsite());
+            txtVBoby.setText(post.getBody());
+            post.setRead(1);
+            if (post.getFavorite()==1)
+                btnFavorite.setBackgroundResource(R.drawable.animafavorite_on);
+            else
+                btnFavorite.setBackgroundResource(R.drawable.animafavorite_off);
+        }
+        catch(Exception e){
+            mensaje.MensajeAdvertencia(DetalleActivity.this, "Warning" , e.getMessage());
+        }
+
+    }
+
     public void UpdateInfoPost(){
         ContentValues valores = new ContentValues();
         try {
 
+
                 valores.put("READ",post.getRead());
                 valores.put("FAVORITE",post.getFavorite());
                 db.update(EstructuraBD.TABLA_POST, valores, "ID = ?", new String[]{String.valueOf(post.getId())});
-
+                finish();
         }
         catch (Exception ex){
             mensaje.MensajeAdvertencia(this,"Advertencia",ex.getMessage());
         }
+    }
+
+    public void Onclick(View view){
+
+        switch (view.getId()){
+            case R.id.btnFavorite:
+                String cadena= "";
+                if (post.getFavorite()==0) {
+                    cadena= "add to";
+                }
+                else {
+                    cadena = "remove from";
+                }
+
+                sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(this,"Warning","You want to "+ cadena +" favorites?");
+                sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+                        try {
+                            if (post.getFavorite()==0) {
+                                post.setFavorite(1);
+                                btnFavorite.setBackgroundResource(R.drawable.animafavorite_on);
+                            }
+                            else {
+                                post.setFavorite(0);
+                                btnFavorite.setBackgroundResource(R.drawable.animafavorite_off);
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mensaje.MensajeAdvertencia(DetalleActivity.this, "Warning", e.getMessage());
+                        }
+
+                    }
+                });
+                sweetAlertDialog.show();
+
+                break;
+            case R.id.btnMaps:
+                break;
+            case R.id.btnExit:
+                sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
+                sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+                        try {
+                            UpdateInfoPost();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mensaje.MensajeAdvertencia(DetalleActivity.this, "Warning", e.getMessage());
+                        }
+
+                    }
+                });
+                sweetAlertDialog.show();
+                break;
+
+        }
+
     }
 
     private final Response.ErrorListener errorListener = new Response.ErrorListener() {

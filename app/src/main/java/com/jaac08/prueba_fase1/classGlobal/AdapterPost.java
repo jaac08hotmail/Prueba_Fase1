@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -51,16 +52,21 @@ public class AdapterPost extends BaseAdapter {
         TextView txtVIdUser = convertView.findViewById(R.id.txtVIdUser);
         TextView txtVTitle = convertView.findViewById(R.id.txtVTitle);
         LinearLayout linerList = convertView.findViewById(R.id.linerList);
+        ImageView imgFavorite = convertView.findViewById(R.id.imgFavorite);
 
         txtVIdPost.setText("" + item.getId());
         txtVIdUser.setText("" + item.getUserId());
         txtVTitle.setText(item.getTitle());
 
         if (position<20){
-            if (!item.getRead())
+            if (item.getRead()==0)
                 linerList.setBackgroundColor(Color.argb(100,0,145,234));
-
         }
+
+        if (item.getFavorite()==1)
+            imgFavorite.setBackgroundResource(R.drawable.favorite_on_unpress);
+        else
+            imgFavorite.setBackgroundResource(R.drawable.background);
 
 
         return convertView;
