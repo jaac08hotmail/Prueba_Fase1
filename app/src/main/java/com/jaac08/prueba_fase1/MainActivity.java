@@ -30,6 +30,7 @@ import com.jaac08.prueba_fase1.ClassDB.EstructuraBD;
 import com.jaac08.prueba_fase1.classGlobal.AdapterPost;
 import com.jaac08.prueba_fase1.classGlobal.General;
 import com.jaac08.prueba_fase1.classGlobal.Mensaje;
+import com.jaac08.prueba_fase1.classGlobal.SwipeDismissListViewTouchListener;
 import com.jaac08.prueba_fase1.model.Post;
 
 import org.json.JSONException;
@@ -41,6 +42,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<Post> listPost;
+    Boolean init=false;
     AdapterPost adapterPost;
     ListView listVPost;
     SweetAlertDialog sweetAlertDialog;
@@ -55,30 +57,59 @@ public class MainActivity extends AppCompatActivity {
         listVPost = findViewById(R.id.listVPost);
         sweetAlertDialog = new SweetAlertDialog(this);
         mensaje = new Mensaje();
+        init=true;
         listPost = new ArrayList<Post>();
         General.conn = new ConexionSQliteHelper(this,"PruebaFase1",null,1);
         db= General.conn.getWritableDatabase();
 
 
-        ConsultaPost();
+        if (!ConsultaInitDBPost())
+            ConsultaUrlPost();
+        else
+            ConsultaDBPost();
 
         listVPost.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                mensaje.MensajeExitoso(MainActivity.this,"Post"+listPost.get(pos).getId(),"Title:"+listPost.get(pos).getTitle());
+
                 Intent intent = new Intent(MainActivity.this,DetalleActivity.class);
                 intent.putExtra("post", listPost.get(pos));
                 startActivity(intent);
 
             }
         });
+
+        SwipeDismissListViewTouchListener touchListener =
+                new SwipeDismissListViewTouchListener(
+                        listVPost,
+                        new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                                for (int position : reverseSortedPositions) {
+
+                                    listPost.remove(position);
+                                    adapterPost.notifyDataSetChanged();
+
+
+                                }
+
+                            }
+                        });
+        listVPost.setOnTouchListener(touchListener);
+
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ConsultaDBPost();
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (init)
+            ConsultaDBPost();
     }
 
     @Override
@@ -100,6 +131,27 @@ public class MainActivity extends AppCompatActivity {
         sweetAlertDialog.show();
     }
 
+    public Boolean ConsultaInitDBPost(){
+
+        try {
+
+            SQLiteDatabase db = General.conn.getReadableDatabase();
+
+            Cursor cursor = db.rawQuery("SELECT  ID FROM POST" ,null);
+
+            cursor.moveToFirst();
+
+            if (cursor.getCount() != 0 )
+                return true;
+            else
+                return false;
+        }
+        catch(Exception e){
+            mensaje.MensajeConfirmacionAdvertencia(this,"Advertecia",e.getMessage());
+            return false;
+        }
+    }
+
     public void ConsultaDBPost(){
 
         try {
@@ -113,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
             if (cursor.getCount() == 0 )
                 return;
 
-          for (int cont=0;cont< cursor.getCount();cont++){
+            listPost.clear();
+            for (int cont=0;cont< cursor.getCount();cont++){
               Post post = new Post();
               post.setId(Integer.parseInt(cursor.getString(0)));
               post.setUserId(Integer.parseInt(cursor.getString(1)));
@@ -122,19 +175,18 @@ public class MainActivity extends AppCompatActivity {
               post.setRead(Integer.parseInt(cursor.getString(4)));
               post.setFavorite(Integer.parseInt(cursor.getString(5)));
               listPost.add(post);
-
-          }
+              cursor.moveToNext();
+            }
             adapterPost = new AdapterPost(MainActivity.this,listPost);
             listVPost.setAdapter(adapterPost);
             return ;
         }
         catch(Exception e){
             mensaje.MensajeConfirmacionAdvertencia(this,"Advertecia",e.getMessage());
-            return ;
         }
     }
 
-    public void ConsultaPost()  {
+    public void ConsultaUrlPost()  {
 
         String URL = General.servidor + General.routesPosts;
 
@@ -206,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         valores.put("TITLE",post.getTitle());
         valores.put("BODY",post.getBody());
         valores.put("READ",post.getRead());
+        valores.put("FAVORITE",post.getFavorite());
 
         db.insertOrThrow(EstructuraBD.TABLA_POST,null,valores);
         }

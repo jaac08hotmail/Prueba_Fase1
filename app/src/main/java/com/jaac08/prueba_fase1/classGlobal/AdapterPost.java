@@ -64,9 +64,9 @@ public class AdapterPost extends BaseAdapter {
         }
 
         if (item.getFavorite()==1)
-            imgFavorite.setBackgroundResource(R.drawable.favorite_on_unpress);
+            imgFavorite.setVisibility(View.VISIBLE);
         else
-            imgFavorite.setBackgroundResource(R.drawable.background);
+            imgFavorite.setVisibility(View.INVISIBLE);
 
 
         return convertView;
