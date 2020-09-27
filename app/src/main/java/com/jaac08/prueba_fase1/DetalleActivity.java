@@ -35,7 +35,7 @@ import java.util.Map;
 
 public class DetalleActivity extends AppCompatActivity {
 
-    TextView txtVnameC,txtVBs,txtVCatchPhrase,txtVUserName,txtVIduser;
+    TextView txtVnameC,txtVBs,txtVCatchPhrase,txtVUserName,txtVIduser,txtPost;
     TextView txtVName,txtVEmail,txtVStreet,txtVSuite,txtVCity,txtVZipcode;
     TextView textVLat,txtVlon,txtVBoby,txtVPhone,txtVWebsite,txtVFavorite;
     Button btnFavorite,btnMaps,btnExit;
@@ -67,6 +67,7 @@ public class DetalleActivity extends AppCompatActivity {
         txtVPhone = findViewById(R.id.txtVPhone);
         txtVWebsite = findViewById(R.id.txtVWebsite);
         txtVFavorite = findViewById(R.id.txtVFavorite);
+        txtPost = findViewById(R.id.txtPost);
 
         btnFavorite = findViewById(R.id.btnFavorite);
         btnMaps = findViewById(R.id.btnMaps);
@@ -172,6 +173,7 @@ public class DetalleActivity extends AppCompatActivity {
             txtVPhone.setText(user.getPhone());
             txtVWebsite.setText(user.getWebsite());
             txtVBoby.setText(post.getBody());
+            txtPost.setText("INFO POST "+ post.getId());
             post.setRead(1);
             if (post.getFavorite()==1)
                 btnFavorite.setBackgroundResource(R.drawable.animafavorite_on);
@@ -195,7 +197,7 @@ public class DetalleActivity extends AppCompatActivity {
                 finish();
         }
         catch (Exception ex){
-            mensaje.MensajeAdvertencia(this,"Advertencia",ex.getMessage());
+            mensaje.MensajeAdvertencia(this,"Warning",ex.getMessage());
         }
     }
 
@@ -211,7 +213,7 @@ public class DetalleActivity extends AppCompatActivity {
                     cadena = "remove from";
                 }
 
-                sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(this,"Warning","You want to "+ cadena +" favorites?");
+                sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(this,"Post Id:"+post.getId(),"You want to "+ cadena +" favorites?");
                 sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {

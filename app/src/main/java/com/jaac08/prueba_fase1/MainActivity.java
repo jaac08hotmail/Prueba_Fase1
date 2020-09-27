@@ -24,6 +24,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.jaac08.prueba_fase1.ClassDB.ConexionSQliteHelper;
 import com.jaac08.prueba_fase1.ClassDB.EstructuraBD;
@@ -91,16 +93,42 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                                 for (int position : reverseSortedPositions) {
-
+                                    deletePost(listPost.get(position));
                                     listPost.remove(position);
                                     adapterPost.notifyDataSetChanged();
-
-
                                 }
 
                             }
                         });
         listVPost.setOnTouchListener(touchListener);
+
+        FloatingActionButton fabDeletePost = findViewById(R.id.fabDeletePost);
+        fabDeletePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(MainActivity.this,"Warning","Are you sure to remove all posts?");
+                sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+                        try {
+                            listPost.clear();
+                            listVPost.setAdapter(null);
+                            db.execSQL("delete from " + EstructuraBD.TABLA_POST);
+                            mensaje.MensajeExitoso(MainActivity.this,"OK","All Post removed successfully");
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mensaje.MensajeAdvertencia(MainActivity.this, "Warning", e.getMessage());
+                        }
+
+                    }
+                });
+                sweetAlertDialog.show();
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
     }
 
@@ -267,6 +295,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void deletePost(Post post){
+        try {
+            db.delete(EstructuraBD.TABLA_POST, "ID = ?", new String[]{String.valueOf(post.getId())});
+            mensaje.MensajeExitoso(this,"OK","Post removed successfully");
+        }
+        catch (Exception ex){
+            mensaje.MensajeAdvertencia(this,"Warning",ex.getMessage());
+        }
+    }
+
     private final Response.ErrorListener errorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
@@ -303,7 +341,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-
 
 }
