@@ -1,20 +1,19 @@
 package com.jaac08.prueba_fase1;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import cn.pedant.SweetAlert.SweetAlertDialog;
-
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.security.identity.CipherSuiteNotSupportedException;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -25,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.jaac08.prueba_fase1.ClassDB.ConexionSQliteHelper;
@@ -33,17 +33,28 @@ import com.jaac08.prueba_fase1.classGlobal.AdapterPost;
 import com.jaac08.prueba_fase1.classGlobal.General;
 import com.jaac08.prueba_fase1.classGlobal.Mensaje;
 import com.jaac08.prueba_fase1.classGlobal.SwipeDismissListViewTouchListener;
+import com.jaac08.prueba_fase1.classGlobal.iComunicaFragments;
 import com.jaac08.prueba_fase1.model.Post;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
+public class MainActivity extends AppCompatActivity
+        implements Toolbar.OnMenuItemClickListener{
+
     ArrayList<Post> listPost;
+    FloatingActionButton fabDeletePost;
+    Toolbar toolbar;
     Boolean init=false;
     AdapterPost adapterPost;
     ListView listVPost;
@@ -51,18 +62,30 @@ public class MainActivity extends AppCompatActivity {
     Mensaje mensaje;
     Post[] posts;
     SQLiteDatabase db;
+    FragmentFavorite fragmentFavorite;
+    FragmentManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listVPost = findViewById(R.id.listVPost);
+        fabDeletePost = findViewById(R.id.fabDeletePost);
+        toolbar = findViewById(R.id.toolbar);
+
         sweetAlertDialog = new SweetAlertDialog(this);
         mensaje = new Mensaje();
         init=true;
-        listPost = new ArrayList<Post>();
+        listPost = new ArrayList<>();
         General.conn = new ConexionSQliteHelper(this,"PruebaFase1",null,1);
         db= General.conn.getWritableDatabase();
+
+
+        setSupportActionBar(toolbar);
+        toolbar.setOnMenuItemClickListener((Toolbar.OnMenuItemClickListener) this);
+
+        fragmentFavorite = new FragmentFavorite();
+        manager = getSupportFragmentManager();
 
 
         if (!ConsultaInitDBPost())
@@ -100,9 +123,10 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         });
+
         listVPost.setOnTouchListener(touchListener);
 
-        FloatingActionButton fabDeletePost = findViewById(R.id.fabDeletePost);
+
         fabDeletePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -341,5 +365,30 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.itemFav:
+                View view= null;
+                listVPost.setVisibility(View.INVISIBLE);
+                fabDeletePost.setVisibility(View.INVISIBLE);
+                manager.beginTransaction().add(R.id.contFragment,fragmentFavorite).commit();
+                //Toast.makeText(MainActivity.this,"Opcion Favorites",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.itemRefres:
+                Toast.makeText(MainActivity.this,"Opcion Refress",Toast.LENGTH_SHORT).show();
+                break;
+            default:
+        }
+        return false;
+    }
 
 }

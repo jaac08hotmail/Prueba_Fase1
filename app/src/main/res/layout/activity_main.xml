@@ -7,6 +7,10 @@
     android:background="@color/colorBackground"
     tools:context=".MainActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabDeletePost"
         android:layout_width="wrap_content"
@@ -21,16 +25,26 @@
     <ListView
         android:id="@+id/listVPost"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
     </ListView>
 
+    <FrameLayout
+        android:id="@+id/contFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
