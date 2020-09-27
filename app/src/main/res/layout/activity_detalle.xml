@@ -148,12 +148,13 @@
 
                 <TextView
                     android:id="@+id/txtVUserName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:textColor="@android:color/white"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/txtUserName"
                     app:layout_constraintTop_toBottomOf="@+id/txtVName" />
 
@@ -402,11 +403,11 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginEnd="16dp"
                     android:background="@drawable/animamapa"
                     android:onClick="Onclick"
                     android:textSize="8sp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/txtVlon"
                     app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
                 <View
@@ -420,7 +421,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtVCity" />
+                    app:layout_constraintTop_toBottomOf="@+id/txtVZipcode" />
 
                 <View
                     android:id="@+id/divider3"
@@ -485,12 +486,13 @@
 
                 <TextView
                     android:id="@+id/txtVPhone"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:textColor="@android:color/white"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/txtPhone"
                     app:layout_constraintTop_toBottomOf="@+id/txtVEmail" />
 
@@ -498,13 +500,13 @@
                     android:id="@+id/txtWebsite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="8dp"
                     android:text="Website:"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/txtVPhone"
-                    app:layout_constraintTop_toBottomOf="@+id/txtVEmail" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtVPhone" />
 
                 <TextView
                     android:id="@+id/txtVWebsite"
@@ -516,7 +518,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/txtWebsite"
-                    app:layout_constraintTop_toBottomOf="@+id/txtVEmail" />
+                    app:layout_constraintTop_toBottomOf="@+id/txtVPhone" />
 
                 <Button
                     android:id="@+id/btnExit"
