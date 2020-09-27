@@ -404,21 +404,25 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.itemAllPost:
-                frag=false;
-                fragmentFavorite = null;
-                getSupportFragmentManager().beginTransaction().
-                        remove(getSupportFragmentManager().findFragmentById(R.id.contFragment)).commit();
-                listVPost.setVisibility(View.VISIBLE);
-                fabDeletePost.setVisibility(View.VISIBLE);
+                if (frag) {
+                    frag = false;
+                    fragmentFavorite = null;
+                    getSupportFragmentManager().beginTransaction().
+                            remove(getSupportFragmentManager().findFragmentById(R.id.contFragment)).commit();
+                    listVPost.setVisibility(View.VISIBLE);
+                    fabDeletePost.setVisibility(View.VISIBLE);
+                }
                 consultaDBPost();
                 break;
             case R.id.itemRefres:
-                frag=false;
-                fragmentFavorite = null;
-                getSupportFragmentManager().beginTransaction().
-                        remove(getSupportFragmentManager().findFragmentById(R.id.contFragment)).commit();
-                listVPost.setVisibility(View.VISIBLE);
-                fabDeletePost.setVisibility(View.VISIBLE);
+                if (frag) {
+                    frag = false;
+                    fragmentFavorite = null;
+                    getSupportFragmentManager().beginTransaction().
+                            remove(getSupportFragmentManager().findFragmentById(R.id.contFragment)).commit();
+                    listVPost.setVisibility(View.VISIBLE);
+                    fabDeletePost.setVisibility(View.VISIBLE);
+                }
                 deleteAllPost(false);
                 consultaUrlPost();
                 break;
