@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.PhoneStateListener;
 import android.view.View;
@@ -37,7 +39,7 @@ public class DetalleActivity extends AppCompatActivity {
 
     TextView txtVnameC,txtVBs,txtVCatchPhrase,txtVUserName,txtVIduser,txtPost;
     TextView txtVName,txtVEmail,txtVStreet,txtVSuite,txtVCity,txtVZipcode;
-    TextView textVLat,txtVlon,txtVBoby,txtVPhone,txtVWebsite,txtVFavorite;
+    TextView txtVLat,txtVlon,txtVBoby,txtVPhone,txtVWebsite,txtVFavorite;
     Button btnFavorite,btnMaps,btnExit;
     Post post;
     User users[];
@@ -61,7 +63,7 @@ public class DetalleActivity extends AppCompatActivity {
         txtVSuite = findViewById(R.id.txtVSuite);
         txtVCity = findViewById(R.id.txtVCity);
         txtVZipcode = findViewById(R.id.txtVZipcode);
-        textVLat = findViewById(R.id.textVLat);
+        txtVLat = findViewById(R.id.textVLat);
         txtVlon = findViewById(R.id.txtVlon);
         txtVBoby = findViewById(R.id.txtVBoby);
         txtVPhone = findViewById(R.id.txtVPhone);
@@ -239,6 +241,10 @@ public class DetalleActivity extends AppCompatActivity {
 
                 break;
             case R.id.btnMaps:
+                Intent intentmaps = new Intent(Intent.ACTION_VIEW);
+                intentmaps.setData(Uri.parse("http://maps.google.com/maps?f=q&q=" + textVLat.getText() + ","+txtVlon.setText()));
+                Intent chooser = Intent.createChooser(intentmaps, "launch Maps");
+                context.startActivity(chooser);
                 break;
             case R.id.btnExit:
                 sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
