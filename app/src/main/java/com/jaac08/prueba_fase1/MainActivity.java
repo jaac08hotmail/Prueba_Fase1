@@ -2,7 +2,6 @@ package com.jaac08.prueba_fase1;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -24,7 +23,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.jaac08.prueba_fase1.ClassDB.ConexionSQliteHelper;
@@ -33,7 +31,6 @@ import com.jaac08.prueba_fase1.classGlobal.AdapterPost;
 import com.jaac08.prueba_fase1.classGlobal.General;
 import com.jaac08.prueba_fase1.classGlobal.Mensaje;
 import com.jaac08.prueba_fase1.classGlobal.SwipeDismissListViewTouchListener;
-import com.jaac08.prueba_fase1.classGlobal.iComunicaFragments;
 import com.jaac08.prueba_fase1.model.Post;
 
 import org.json.JSONObject;
@@ -42,10 +39,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -55,13 +50,13 @@ public class MainActivity extends AppCompatActivity
     ArrayList<Post> listPost;
     FloatingActionButton fabDeletePost;
     Toolbar toolbar;
-    Boolean init=false;
+    Boolean init=false,frag=false;
     AdapterPost adapterPost;
     ListView listVPost;
     SweetAlertDialog sweetAlertDialog;
     Mensaje mensaje;
     Post[] posts;
-    SQLiteDatabase db;
+    SQLiteDatabase dbWr,dbRe;
     FragmentFavorite fragmentFavorite;
     FragmentManager manager;
 
@@ -78,20 +73,19 @@ public class MainActivity extends AppCompatActivity
         init=true;
         listPost = new ArrayList<>();
         General.conn = new ConexionSQliteHelper(this,"PruebaFase1",null,1);
-        db= General.conn.getWritableDatabase();
-
+        dbWr= General.conn.getWritableDatabase();
+        dbRe= General.conn.getReadableDatabase();
 
         setSupportActionBar(toolbar);
         toolbar.setOnMenuItemClickListener((Toolbar.OnMenuItemClickListener) this);
 
-        fragmentFavorite = new FragmentFavorite();
         manager = getSupportFragmentManager();
 
 
-        if (!ConsultaInitDBPost())
-            ConsultaUrlPost();
+        if (!consultaInitDBPost())
+            consultaUrlPost();
         else
-            ConsultaDBPost();
+            consultaDBPost();
 
         listVPost.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -138,9 +132,7 @@ public class MainActivity extends AppCompatActivity
                         try {
                             listPost.clear();
                             listVPost.setAdapter(null);
-                            db.execSQL("delete from " + EstructuraBD.TABLA_POST);
-                            mensaje.MensajeExitoso(MainActivity.this,"OK","All Post removed successfully");
-
+                            deleteAllPost(true);
                         } catch (Exception e) {
                             e.printStackTrace();
                             mensaje.MensajeAdvertencia(MainActivity.this, "Warning", e.getMessage());
@@ -149,19 +141,31 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 sweetAlertDialog.show();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
             }
         });
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (frag) {
+            fragmentFavorite = null;
+            getSupportFragmentManager().beginTransaction().
+                    remove(getSupportFragmentManager().findFragmentById(R.id.contFragment)).commit();
+            fragmentFavorite = new FragmentFavorite();
+            manager.beginTransaction().add(R.id.contFragment, fragmentFavorite).commit();
+        }
+    }
 
     @Override
     protected void onRestart() {
         super.onRestart();
         if (init)
-            ConsultaDBPost();
+            consultaDBPost();
+
     }
 
     @Override
@@ -183,13 +187,11 @@ public class MainActivity extends AppCompatActivity
         sweetAlertDialog.show();
     }
 
-    public Boolean ConsultaInitDBPost(){
+    public Boolean consultaInitDBPost(){
 
         try {
 
-            SQLiteDatabase db = General.conn.getReadableDatabase();
-
-            Cursor cursor = db.rawQuery("SELECT  ID FROM POST" ,null);
+            Cursor cursor = dbRe.rawQuery("SELECT  ID FROM POST" ,null);
 
             cursor.moveToFirst();
 
@@ -204,13 +206,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void ConsultaDBPost(){
+    public void consultaDBPost(){
 
         try {
 
-            SQLiteDatabase db = General.conn.getReadableDatabase();
-
-            Cursor cursor = db.rawQuery("SELECT  ID,USERID,TITLE,BODY,READ,FAVORITE FROM POST" ,null);
+            Cursor cursor = dbRe.rawQuery("SELECT  ID,USERID,TITLE,BODY,READ,FAVORITE FROM POST" ,null);
 
             cursor.moveToFirst();
 
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void ConsultaUrlPost()  {
+    public void consultaUrlPost()  {
 
         String URL = General.servidor + General.routesPosts;
 
@@ -259,7 +259,8 @@ public class MainActivity extends AppCompatActivity
                             }
                             else {
                                 posts = new Gson().fromJson(response, Post[].class);
-
+                                listPost.clear();
+                                listVPost.setAdapter(null);
                                 for (Post post : posts) {
                                     post.setRead(0);
                                     post.setFavorite(0);
@@ -305,14 +306,14 @@ public class MainActivity extends AppCompatActivity
         ContentValues valores = new ContentValues();
         try {
 
-        valores.put("ID",post.getId());
-        valores.put("USERID",post.getUserId());
-        valores.put("TITLE",post.getTitle());
-        valores.put("BODY",post.getBody());
-        valores.put("READ",post.getRead());
-        valores.put("FAVORITE",post.getFavorite());
+            valores.put("ID",post.getId());
+            valores.put("USERID",post.getUserId());
+            valores.put("TITLE",post.getTitle());
+            valores.put("BODY",post.getBody());
+            valores.put("READ",post.getRead());
+            valores.put("FAVORITE",post.getFavorite());
 
-        db.insertOrThrow(EstructuraBD.TABLA_POST,null,valores);
+            dbWr.insertOrThrow(EstructuraBD.TABLA_POST,null,valores);
         }
         catch(Exception e){
             e.printStackTrace();
@@ -321,10 +322,23 @@ public class MainActivity extends AppCompatActivity
 
     public void deletePost(Post post){
         try {
-            db.delete(EstructuraBD.TABLA_POST, "ID = ?", new String[]{String.valueOf(post.getId())});
+
+
+            dbWr.delete(EstructuraBD.TABLA_POST, "ID = ?", new String[]{String.valueOf(post.getId())});
             mensaje.MensajeExitoso(this,"OK","Post removed successfully");
         }
         catch (Exception ex){
+            mensaje.MensajeAdvertencia(this,"Warning",ex.getMessage());
+        }
+    }
+
+    public void deleteAllPost(boolean banMen){
+        try {
+            dbWr.execSQL("delete from " + EstructuraBD.TABLA_POST);
+            if (banMen)
+                mensaje.MensajeExitoso(MainActivity.this,"OK","All Post removed successfully");
+        }
+            catch (Exception ex){
             mensaje.MensajeAdvertencia(this,"Warning",ex.getMessage());
         }
     }
@@ -377,15 +391,38 @@ public class MainActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()){
             case R.id.itemFav:
-                View view= null;
-                listVPost.setVisibility(View.INVISIBLE);
-                fabDeletePost.setVisibility(View.INVISIBLE);
-                manager.beginTransaction().add(R.id.contFragment,fragmentFavorite).commit();
-                //Toast.makeText(MainActivity.this,"Opcion Favorites",Toast.LENGTH_SHORT).show();
+                if (!frag) {
+                    frag=true;
+                    fragmentFavorite = new FragmentFavorite();
+                    listVPost.setVisibility(View.INVISIBLE);
+                    fabDeletePost.setVisibility(View.INVISIBLE);
+                    manager.beginTransaction().add(R.id.contFragment, fragmentFavorite).commit();
+                }
+                else{
+                    View view = null;
+                    Toast.makeText(MainActivity.this,"You are already in Favorite Posts",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.itemAllPost:
+                frag=false;
+                fragmentFavorite = null;
+                getSupportFragmentManager().beginTransaction().
+                        remove(getSupportFragmentManager().findFragmentById(R.id.contFragment)).commit();
+                listVPost.setVisibility(View.VISIBLE);
+                fabDeletePost.setVisibility(View.VISIBLE);
+                consultaDBPost();
                 break;
             case R.id.itemRefres:
-                Toast.makeText(MainActivity.this,"Opcion Refress",Toast.LENGTH_SHORT).show();
+                frag=false;
+                fragmentFavorite = null;
+                getSupportFragmentManager().beginTransaction().
+                        remove(getSupportFragmentManager().findFragmentById(R.id.contFragment)).commit();
+                listVPost.setVisibility(View.VISIBLE);
+                fabDeletePost.setVisibility(View.VISIBLE);
+                deleteAllPost(false);
+                consultaUrlPost();
                 break;
+
             default:
         }
         return false;
