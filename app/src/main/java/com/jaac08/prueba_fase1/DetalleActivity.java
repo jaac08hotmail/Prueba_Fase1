@@ -170,7 +170,7 @@ public class DetalleActivity extends AppCompatActivity {
             txtVSuite.setText(user.getAddress().getSuite());
             txtVCity.setText(user.getAddress().getCity());
             txtVZipcode.setText(user.getAddress().getZipcode());
-            textVLat.setText(user.getAddress().getGeo().getLat());
+            txtVLat.setText(user.getAddress().getGeo().getLat());
             txtVlon.setText(user.getAddress().getGeo().getLng());
             txtVPhone.setText(user.getPhone());
             txtVWebsite.setText(user.getWebsite());
@@ -242,9 +242,9 @@ public class DetalleActivity extends AppCompatActivity {
                 break;
             case R.id.btnMaps:
                 Intent intentmaps = new Intent(Intent.ACTION_VIEW);
-                intentmaps.setData(Uri.parse("http://maps.google.com/maps?f=q&q=" + textVLat.getText() + ","+txtVlon.setText()));
+                intentmaps.setData(Uri.parse("http://maps.google.com/maps?f=q&q=" + txtVLat.getText() + ","+txtVlon.getText()));
                 Intent chooser = Intent.createChooser(intentmaps, "launch Maps");
-                context.startActivity(chooser);
+                startActivity(chooser);
                 break;
             case R.id.btnExit:
                 sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
