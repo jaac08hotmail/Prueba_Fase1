@@ -84,7 +84,8 @@ public class DetalleActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
+        UpdateInfoPost();
+        /*sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
         sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -98,7 +99,7 @@ public class DetalleActivity extends AppCompatActivity {
 
             }
         });
-        sweetAlertDialog.show();
+        sweetAlertDialog.show();*/
     }
 
     public void ConsultaUser()  {
@@ -191,8 +192,6 @@ public class DetalleActivity extends AppCompatActivity {
     public void UpdateInfoPost(){
         ContentValues valores = new ContentValues();
         try {
-
-
                 valores.put("READ",post.getRead());
                 valores.put("FAVORITE",post.getFavorite());
                 db.update(EstructuraBD.TABLA_POST, valores, "ID = ?", new String[]{String.valueOf(post.getId())});
