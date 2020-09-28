@@ -247,7 +247,8 @@ public class DetalleActivity extends AppCompatActivity {
                 startActivity(chooser);
                 break;
             case R.id.btnExit:
-                sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
+                UpdateInfoPost();
+                /*sweetAlertDialog = mensaje.MensajeConfirmacionAdvertenciaConBotones(DetalleActivity.this,"Warning","Is sure to Exit?");
                 sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -261,7 +262,7 @@ public class DetalleActivity extends AppCompatActivity {
 
                     }
                 });
-                sweetAlertDialog.show();
+                sweetAlertDialog.show();*/
                 break;
 
         }
